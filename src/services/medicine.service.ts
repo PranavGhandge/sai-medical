@@ -49,7 +49,7 @@ class MedicineService {
             }
 
             const { rows, count } = await Medicine.findAndCountAll({
-                where, limit, offset, include: [{ model: Category, as:"category", attributes: ["id", "name"] }], attributes: { exclude: ["created_at", "updated_at", "category_id"] }
+                where, limit, offset, include: [{ model: Category, as: "category", attributes: ["id", "name"] }], attributes: { exclude: ["created_at", "updated_at", "category_id"] }
             })
 
             return {
@@ -124,6 +124,87 @@ class MedicineService {
         } catch (error) {
             throw error
         }
+    }
+
+    async getExpiryMedicine() {
+        try {
+
+            const today = new Date();
+
+            const next30Days = new Date();
+
+            next30Days.setDate(
+                today.getDate() + 30
+            );
+
+            const medicines = await Medicine.findAll({
+                where: {
+                    expiry_date: {
+                        [Op.lte]: next30Days
+                    }
+                },
+
+                attributes: [
+                    "id",
+                    "name",
+                    "company",
+                    "quantity",
+                    "expiry_date"
+                ]
+
+            });
+
+            if (medicines.length === 0) {
+
+                throw new Error(
+                    "No Expiry Medicine Found"
+                )
+            }
+
+            return {
+                message: "Expiry Medicine Found Successfully",
+                medicines
+            }
+
+        } catch (error) {
+            throw error
+        }
+    }
+
+    async getLowStockMedicine() {
+        try {
+            const medicines = await Medicine.findAll({
+                where: {
+                    quantity: {
+                        [Op.lt]: 10
+
+                    }
+                },
+
+                attributes: [
+                    "id",
+                    "name",
+                    "company",
+                    "quantity"
+                ]
+            });
+
+
+            if (medicines.length === 0) {
+                throw new Error(
+                    "No Low Stock Medicine Found"
+                )
+            }
+
+            return {
+                message: "Low Stock Medicine Found Successfully",
+                medicines
+            }
+
+        } catch (error) {
+            throw error
+        }
+
     }
 }
 

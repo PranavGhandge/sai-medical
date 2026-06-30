@@ -88,6 +88,31 @@ class MedicineController {
             })
         }
     }
+
+    async getExpiryMedicine(req: FastifyRequest, rep: FastifyReply) {
+        try {
+            const response = await medicineService.getExpiryMedicine();
+            return rep.status(200).send(response);
+
+        } catch (error) {
+
+            return rep.status(400).send({
+                message: (error as Error).message
+            });
+        }
+    }
+
+    async getLowStockMedicine(req: FastifyRequest, rep: FastifyReply) {
+        try {
+            const response = await medicineService.getLowStockMedicine();
+            return rep.status(200).send(response);
+
+        } catch (error) {
+            return rep.status(400).send({
+                message: (error as Error).message
+            });
+        }
+    }
 }
 
 export default new MedicineController();
