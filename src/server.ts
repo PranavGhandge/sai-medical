@@ -1,6 +1,8 @@
 import Fastify from "fastify";
 import sequelize from "./config/database";
 import dotenv from "dotenv";
+import "./models/assocation";
+import { routes } from "./routes/index"
 
 
 dotenv.config();
@@ -14,10 +16,11 @@ const start = async () => {
         await sequelize.authenticate();
         console.log("Database Connected");
 
-        await sequelize.sync({alter:true});
+        await sequelize.sync({ alter: true });
         console.log("Table created");
 
-
+        app.register(routes)
+        
         await app.listen({
             port: PORT,
         });
