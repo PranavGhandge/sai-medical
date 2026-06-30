@@ -1,0 +1,130 @@
+import { CreateMedicineInterface, MedicineQueryInterface, UpdateMedicineInterface } from "../interface/medicine.interface";
+import Category from "../models/category.model";
+import Medicine from "../models/medicine.model";
+import { Op } from "sequelize";
+
+class MedicineService {
+    async addMedicine(data: CreateMedicineInterface) {
+        try {
+            const checkexist = await Medicine.findOne({ where: { name: data.name, company: data.company } })
+
+            if (checkexist) {
+                throw new Error("Medicine Already Exist")
+            }
+
+            const created = await Medicine.create({ ...data })
+
+            return {
+                success: true,
+                message: "Medicine Added Successfully",
+                medicine: {
+                    medicine_id: created.id,
+                    medicine_name: created.name,
+                    medicine_compnay: created.company,
+                    medicine_price: created.price,
+                    medicine_quantity: created.quantity,
+                    category_id: created.category_id
+                }
+            }
+        } catch (error) {
+            throw error
+        }
+    }
+
+    async getAllMedicine(query: MedicineQueryInterface) {
+        try {
+
+            const page = query.page || 1;
+
+            const limit = query.limit || 10;
+
+            const offset = (page - 1) * limit;
+
+            const where: any = {};
+
+            if (query.search) {
+                where.name = {
+                    [Op.like]: `%${query.search}%`
+                }
+            }
+
+            const { rows, count } = await Medicine.findAndCountAll({
+                where, limit, offset, include: [{ model: Category, as:"category", attributes: ["id", "name"] }], attributes: { exclude: ["created_at", "updated_at", "category_id"] }
+            })
+
+            return {
+                message: "Medicine Found Successfully",
+                total: count,
+                page,
+                limit,
+                medicine: rows
+            }
+        } catch (error) {
+            throw error
+        }
+    }
+
+    async getMedicineById(id: string) {
+        try {
+            const medicine = await Medicine.findOne(
+                {
+                    where: { id: id },
+                    include: [{
+                        model: Category,
+                        attributes: ["id", "name"]
+                    }],
+                    attributes: { exclude: ["created_at", "updated_at", "category_id"] }
+                }
+            );
+
+            if (!medicine) {
+                throw new Error("Medicine Not Found")
+            }
+
+            return {
+                message: "Medicine Found Successfully",
+                medicine: medicine
+            }
+        } catch (error) {
+            throw error
+        }
+    }
+
+    async updateMedicine(id: string, data: UpdateMedicineInterface) {
+        try {
+            const medicine = await Medicine.findOne({ where: { id: id } });
+
+            if (!medicine) {
+                throw new Error("Medicine Not Found")
+            }
+
+            await Medicine.update(data, { where: { id: id } })
+
+            return {
+                message: "Medicine Updated Successfully"
+            }
+        } catch (error) {
+            throw error
+        }
+    }
+
+    async deleteMedicine(id: string) {
+        try {
+            const medicine = await Medicine.findOne({ where: { id: id } })
+
+            if (!medicine) {
+                throw new Error("Medicine Not Found")
+            }
+
+            await Medicine.destroy({ where: { id: id } })
+
+            return {
+                message: "Medicine Deleted Successfully"
+            }
+        } catch (error) {
+            throw error
+        }
+    }
+}
+
+export default new MedicineService();
