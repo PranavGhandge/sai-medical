@@ -48,8 +48,46 @@ class MedicineService {
                 }
             }
 
+            if (query.company) {
+                where.company = query.company;
+            }
+
+            if (query.category_id) {
+                where.category_id = query.category_id;
+            }
+
+            if (query.expiry) {
+                const today = new Date();
+                where.expiry_date = {
+                    [Op.lte]: today
+                }
+            }
+
+            if (query.min_price && query.max_price) {
+                where.price = {
+                    [Op.between]: [
+                        query.min_price,
+                        query.max_price
+                    ]
+                }
+            }
+
+            let order: any = [
+                ["created_at", "DESC"]
+            ];
+
+            if (query.sortBy) {
+                order = [
+                    [
+                        query.sortBy,
+                        query.order || "ASC"
+                    ]
+                ]
+            }
+
+
             const { rows, count } = await Medicine.findAndCountAll({
-                where, limit, offset, include: [{ model: Category, as: "category", attributes: ["id", "name"] }], attributes: { exclude: ["created_at", "updated_at", "category_id"] }
+                where, limit, offset, include: [{ model: Category, as: "category", attributes: ["id", "name"] }], order, attributes: { exclude: ["created_at", "updated_at", "category_id"] }
             })
 
             return {
