@@ -7,6 +7,7 @@ import PurchaseRoutes from "./purchase.route";
 import SaleRoutes from "./sale.route";
 import DashboardRoutes from "./dashboard.route";
 import InvoiceRoutes from "./invoice.route";
+import ReportRoutes from "./report.route";
 
 
 
@@ -19,5 +20,6 @@ export async function routes(fastify: FastifyInstance) {
     fastify.register(PurchaseRoutes);
     fastify.register(SaleRoutes);
     fastify.register(DashboardRoutes);
-    fastify.register(InvoiceRoutes)
+    fastify.register(InvoiceRoutes);
+    fastify.register(ReportRoutes);
 }
