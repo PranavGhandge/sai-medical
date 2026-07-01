@@ -1,5 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
+import SaleItem from "./sale_item.model";
 
 
 class Sale extends Model {
@@ -10,6 +11,7 @@ class Sale extends Model {
     declare sale_date: Date;
     declare created_at: Date;
     declare updated_at: Date;
+    declare items: SaleItem[]
 }
 
 

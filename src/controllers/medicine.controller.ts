@@ -23,15 +23,24 @@ class MedicineController {
     async getAllMedicine(req: FastifyRequest, rep: FastifyReply) {
         try {
 
-            const { page, limit, search } = req.query as MedicineQueryInterface;
+            const query = req.query as MedicineQueryInterface;
 
             const response = await medicineService.getAllMedicine({
-                page: Number(page) || 1,
-                limit: Number(limit) || 10,
-                search
+                page: Number(query.page) || 1,
+                limit: Number(query.limit) || 10,
+                search: query.search,
+                company: query.company,
+                category_id: query.category_id,
+                expiry: query.expiry,
+                min_price: Number(query.min_price),
+                max_price: Number(query.max_price),
+                sortBy: query.sortBy,
+                order: query.order
+
             });
 
             return rep.status(200).send(response)
+            
         } catch (error) {
             return rep.status(500).send({
                 message: "Internal Server Error",
