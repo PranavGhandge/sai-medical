@@ -13,9 +13,9 @@ import ReportRoutes from "./report.route";
 
 
 export async function routes(fastify: FastifyInstance) {
-    fastify.register(MedicineRoutes, { prefix: "/medicine" });
-    fastify.register(CategoryRoutes, { prefix: "/category" });
-    fastify.register(StockRoutes, { prefix: "/stock" });
+    fastify.register(MedicineRoutes);
+    fastify.register(CategoryRoutes);
+    fastify.register(StockRoutes);
     fastify.register(SupplierRoutes);
     fastify.register(PurchaseRoutes);
     fastify.register(SaleRoutes);

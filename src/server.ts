@@ -19,8 +19,8 @@ const start = async () => {
         await sequelize.sync({ alter: true });
         console.log("Table created");
 
-        app.register(routes)
-        
+        app.register(routes, { prefix: "/api" })
+
         await app.listen({
             port: PORT,
         });
